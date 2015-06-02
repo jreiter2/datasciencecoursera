@@ -1,0 +1,85 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf400
+{\fonttbl\f0\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720
+
+\f0\fs26 \cf0 \expnd0\expndtw0\kerning0
+"""\
+# Project 1 - Algorithmic Thinking\
+# Degree distributions for graphs\
+"""\
+\
+# Defining the example graphs\
+EX_GRAPH0 = \{0: set([1,2]), 1: set([]), 2: set([])\}\
+EX_GRAPH1 = \{0: set([1,4,5]), 1: set([2,6]), 2: set([3]), 3: set([0]), 4: set([1]), 5: set([2]), 6: set([])\}\
+EX_GRAPH2 = \{0: set([1,4,5]), 1: set([2,6]), 2: set([3,7]), 3: set([7]), 4: set([1]), 5: set([2]), 6: set([]), 7: set([3]), 8: set([1,2]), 9: set([0,3,4,5,6,7])\}\
+\
+TESTCAT = \{'cat': set(['dog','banana']), 'dog': set(['banana']), 'banana': set([])\}\
+\
+def make_complete_graph(num_nodes):\
+    """\
+    Function takes a number and returns a dictionary\
+    corresponding to a complete directed graph with\
+    the specified number of nodes.\
+    """\
+    # when 0 nodes make null graph, otherwise make graph\
+    graph = \{\}\
+    if num_nodes == 0:\
+        return graph\
+    else: \
+        for nodes in range(num_nodes):\
+            nodeset = set(range(num_nodes))\
+            nodeset.remove(nodes)\
+            graph[nodes] = nodeset\
+    \
+    return graph\
+\
+def compute_in_degrees(digraph):\
+    """\
+    Takes a directed graph and computes the in-degrees \
+    for the nodes in the graph\
+    """\
+    \
+    # count number of in-edges for each node\
+    count = \{\}\
+    for key,value in digraph.items():\
+        count[key] = 0\
+    for key,value in digraph.items():\
+        for countkey,dummy_countvalue in count.items():\
+            if countkey in value:\
+                count[countkey] += 1\
+\
+    return count\
+\
+def in_degree_distribution(digraph):\
+    """\
+    The function returns a dictionary whose \
+    keys correspond to in-degrees of nodes in the graph\
+    """\
+    # get the in-degree of each node\
+    indegrees = compute_in_degrees(digraph)\
+    \
+    # count the number of nodes with each in-degree\
+    distribution = \{\}\
+    for dummy_key,value in indegrees.items():\
+        if value not in distribution:\
+            distribution[value] = 1\
+        else:\
+            distribution[value] += 1\
+\
+    return distribution\
+  \
+# testing    \
+#print make_complete_graph(0)\
+#print compute_in_degrees(EX_GRAPH2)\
+#print in_degree_distribution(EX_GRAPH2)\
+#print compute_in_degrees(TESTCAT)\
+#print compute_in_degrees(EX_GRAPH0)\
+#print compute_in_degrees(EX_GRAPH1)\
+#print compute_in_degrees(EX_GRAPH2)\
+#print in_degree_distribution(TESTCAT)\
+#print in_degree_distribution(EX_GRAPH0)\
+#print in_degree_distribution(EX_GRAPH1)\
+#print in_degree_distribution(EX_GRAPH2)}

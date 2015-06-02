@@ -1,0 +1,238 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf400
+{\fonttbl\f0\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720
+
+\f0\fs26 \cf0 \expnd0\expndtw0\kerning0
+"""\
+Clone of 2048 game.\
+"""\
+\
+# importing libraries\
+import poc_2048_gui\
+import random\
+\
+# Directions, DO NOT MODIFY\
+UP = 1\
+DOWN = 2\
+LEFT = 3\
+RIGHT = 4\
+\
+# Offsets for computing tile indices in each direction.\
+# DO NOT MODIFY this dictionary.\
+OFFSETS = \{UP: (1, 0),\
+           DOWN: (-1, 0),\
+           LEFT: (0, 1),\
+           RIGHT: (0, -1)\}\
+\
+def merge(line):\
+    """\
+    Helper function that merges a single row or column in 2048\
+    """\
+    \
+    # if single length list\
+    if len(line) == 1:\
+        return line\
+    \
+    # eliminate zeros\
+    if line.count(0) > 0:\
+        new_line = [value for value in line if value != 0]\
+        zero_count = line.count(0)  \
+        zero_list = [0]*zero_count\
+        new_line += zero_list\
+    else:\
+        new_line = line[:]\
+    \
+    # merge tiles\
+    for position in range(1,len(new_line)):\
+        if new_line[position - 1] == new_line[position]:\
+            new_line[position - 1] += new_line[position]\
+            del new_line[position]\
+            new_line += [0]\
+            \
+    # return new_line value\
+    return new_line\
+\
+class TwentyFortyEight:\
+    """\
+    Class to run the game logic.\
+    """\
+\
+    def __init__(self, grid_height, grid_width):\
+        # set grid height and width\
+        self._grid_height = grid_height\
+        self._grid_width = grid_width\
+        self.reset()\
+\
+    def reset(self):\
+        """\
+        Reset the game so the grid is empty except for two\
+        initial tiles.\
+        """\
+        # set board\
+        self._grid = [[0 for dummy_col in range(self._grid_width)] for dummy_row in range(self._grid_height)]\
+        \
+        # get 2 initial tiles and set in grid\
+        self.new_tile()\
+        self.new_tile()\
+\
+    def __str__(self):\
+        """\
+        Return a string representation of the grid for debugging.\
+        """\
+        # replace with your code\
+        return str(self._grid)\
+\
+    def get_grid_height(self):\
+        """\
+        Get the height of the board.\
+        """\
+        # replace with your code\
+        return self._grid_height\
+\
+    def get_grid_width(self):\
+        """\
+        Get the width of the board.\
+        """\
+        # replace with your code\
+        return self._grid_width\
+\
+    def move(self, direction):\
+        """\
+        Move all tiles in the given direction and add\
+        a new tile if any tiles moved.\
+        """\
+        # make copy of grid\
+        state_grid = [[0 for dummy_col in range(self._grid_width)] for dummy_row in range(self._grid_height)]\
+        for staterow in range(self._grid_height):\
+            for statecol in range(self._grid_width):\
+                state_grid[staterow][statecol] = self._grid[staterow][statecol]\
+        \
+        # Set initial tiles for each direction\
+        if direction == 1:\
+            initial=[0]*self._grid_width\
+            for index in range(self._grid_width):\
+                initial[index] = (0,index)\
+        if direction == 2:\
+            initial=[0]*self._grid_width\
+            for index in range(self._grid_width):\
+                initial[index] = (self._grid_height-1,index)\
+        if direction == 3:\
+            initial=[0]*self._grid_height\
+            for index in range(self._grid_height):\
+                initial[index] = (index,0)\
+        if direction == 4:\
+            initial=[0]*self._grid_height\
+            for index in range(self._grid_height):\
+                initial[index] = (index,self._grid_width-1)\
+        \
+\
+        # making lines to pass to merge function\
+        if direction == 1 or direction ==2:\
+            lines = [[0 for dummy_col in range(self._grid_height)] for dummy_row in range(self._grid_width)]\
+            for member in range(self._grid_width):\
+                for num in range(self._grid_height):\
+                    lines[member][num] = self._grid[initial[member][0]+num*OFFSETS[direction][0]][initial[member][1]+num*OFFSETS[direction][1]]\
+        \
+        if direction == 3 or direction == 4:\
+            lines = [[0 for dummy_col in range(self._grid_width)] for dummy_row in range(self._grid_height)]\
+            for member in range(self._grid_height):\
+                for num in range(self._grid_width):\
+                    lines[member][num] = self._grid[initial[member][0]+num*OFFSETS[direction][0]][initial[member][1]+num*OFFSETS[direction][1]]\
+                      \
+        # pass lines to merge function and record new grid matrix\
+        if direction == 1 or direction == 2:\
+            new_grid = [[0 for dummy_id1 in range(self._grid_height)] for dummy_id2 in range(self._grid_width)]\
+            for element in range(self._grid_width):\
+                new_grid[element] = merge(lines[element])\
+        \
+        if direction == 3 or direction == 4:\
+            new_grid = [[0 for dummy_id1 in range(self._grid_width)] for dummy_id2 in range(self._grid_height)]\
+            for element in range(self._grid_height):\
+                new_grid[element] = merge(lines[element])\
+        \
+        # set new grid values in grid\
+        if direction == 1:\
+            for gindex1 in range(self._grid_width):\
+                for gindex2 in range(self._grid_height):\
+                    self._grid[gindex2][gindex1] = new_grid[gindex1][gindex2]\
+        \
+        if direction == 2:\
+            for gindex1 in range(self._grid_width):\
+                for gindex2 in range(self._grid_height):\
+                    self._grid[self._grid_height - 1 - gindex2][gindex1] = new_grid[gindex1][gindex2]\
+        \
+        if direction == 3:\
+            for gindex1 in range(self._grid_height):\
+                for gindex2 in range(self._grid_width):\
+                    self._grid[gindex1][gindex2] = new_grid[gindex1][gindex2]\
+        \
+        if direction == 4:\
+            for gindex1 in range(self._grid_height):\
+                for gindex2 in range(self._grid_width):\
+                    self._grid[gindex1][self._grid_width - 1 - gindex2] = new_grid[gindex1][gindex2]\
+        \
+        # set two new tiles, if state is different\
+        if self._grid != state_grid:\
+            self.new_tile()\
+\
+    def new_tile(self):\
+        """\
+        Create a new tile in a randomly selected empty\
+        square.  The tile should be 2 90% of the time and\
+        4 10% of the time.\
+        """\
+        \
+        # make sure there are free spaces\
+        # counting zeros\
+        zerocount = 0\
+        for rownum in range(self._grid_height):\
+            for colnum in range(self._grid_width):\
+                if self._grid[rownum][colnum] == 0:\
+                    zerocount += 1\
+        \
+        \
+        if zerocount == 0:\
+            print "No more free tiles!"\
+            return 0\
+        else:\
+        \
+            # select new tile location and value\
+            new_tile_row = random.randrange(self._grid_height)\
+            new_tile_col = random.randrange(self._grid_width)\
+            # making sure the space is free\
+            while self._grid[new_tile_row][new_tile_col] != 0:\
+                new_tile_row = random.randrange(self._grid_height)\
+                new_tile_col = random.randrange(self._grid_width)\
+            # setting the value (2: 90%, 4:10%)\
+            test_value = random.random()\
+            if test_value < 0.9:\
+                new_value = 2\
+            else:\
+                new_value = 4\
+        \
+            # set value in the grid\
+            self.set_tile(new_tile_row, new_tile_col, new_value)\
+            \
+            #return [new_tile_row, new_tile_col, new_value]    \
+\
+    def set_tile(self, row, col, value):\
+        """\
+        Set the tile at position row, col to have the given value.\
+        """\
+        # replace with your code\
+        self._grid[row][col] = value\
+\
+    def get_tile(self, row, col):\
+        """\
+        Return the value of the tile at position row, col.\
+        """\
+        # replace with your code\
+        return self._grid[row][col]\
+\
+\
+poc_2048_gui.run_gui(TwentyFortyEight(4, 5))\
+\
+}
